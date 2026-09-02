@@ -1,1 +1,34 @@
+```yaml
+name: Build Timetable APK
 
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show project
+        run: |
+          echo "Repository contents:"
+          find . -maxdepth 3 -type f | sort
+
+      - name: Check timetable ZIP
+        run: |
+          test -f School-Timetable-SQLite.zip
+          echo "ZIP found successfully"
+
+      - name: Extract timetable project
+        run: |
+          mkdir -p timetable
+          unzip -q School-Timetable-SQLite.zip -d timetable
+
+      - name: Show extracted project
+        run: |
+          echo "Extracted files:"
+          find timetable -maxdepth 3 -type f | sort
+```
