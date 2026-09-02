@@ -1,0 +1,34 @@
+name: Build WebToApp Runtime
+
+on:
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout timetable project
+        uses: actions/checkout@v4
+
+      - name: Download WebToApp source
+        uses: actions/checkout@v4
+        with:
+          repository: shiaho777/web-to-app
+          path: webtoapp
+
+      - name: Show WebToApp structure
+        run: |
+          echo "WebToApp source:"
+          find webtoapp -maxdepth 2 -type f | sort | head -200
+
+      - name: Show PHP runtime files
+        run: |
+          echo "PHP runtime:"
+          find webtoapp -path '*php*' -type f | head -100
+
+      - name: Show Gradle files
+        run: |
+          find webtoapp -maxdepth 3 \
+            \( -name 'build.gradle*' -o -name 'settings.gradle*' -o -name 'gradlew' \) \
+            -type f | sort
