@@ -39,7 +39,7 @@ jobs:
 
       - name: Build WebToApp
         working-directory: webtoapp
-        run: ./gradlew :app:assembleDebug --stacktrace
+        run: ./gradlew :app:assembleDebug --stacktrace -PallowDebugSignedRelease=true
 
       - name: Find APK
         run: |
