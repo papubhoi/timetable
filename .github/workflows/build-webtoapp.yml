@@ -1,34 +1,52 @@
-name: Build WebToApp Runtime
+name: Build WebToApp
 
 on:
   workflow_dispatch:
 
 jobs:
-  prepare:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout timetable project
+      - name: Checkout timetable repository
         uses: actions/checkout@v4
 
-      - name: Download WebToApp source
+      - name: Checkout WebToApp
         uses: actions/checkout@v4
         with:
           repository: shiaho777/web-to-app
           path: webtoapp
 
-      - name: Show WebToApp structure
-        run: |
-          echo "WebToApp source:"
-          find webtoapp -maxdepth 2 -type f | sort | head -200
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-      - name: Show PHP runtime files
-        run: |
-          echo "PHP runtime:"
-          find webtoapp -path '*php*' -type f | head -100
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Show Gradle files
+      - name: Install Android build tools
         run: |
-          find webtoapp -maxdepth 3 \
-            \( -name 'build.gradle*' -o -name 'settings.gradle*' -o -name 'gradlew' \) \
-            -type f | sort
+          sdkmanager "platform-tools" \
+                     "platforms;android-35" \
+                     "build-tools;35.0.0" \
+                     "cmake;3.22.1" \
+                     "ndk;28.2.13676358"
+
+      - name: Make Gradle executable
+        run: chmod +x webtoapp/gradlew
+
+      - name: Build WebToApp
+        working-directory: webtoapp
+        run: ./gradlew :app:assembleDebug --stacktrace
+
+      - name: Find APK
+        run: |
+          find webtoapp -type f -name "*.apk" -print
+
+      - name: Upload WebToApp APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: WebToApp-debug
+          path: webtoapp/**/*.apk
