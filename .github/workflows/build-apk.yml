@@ -1,0 +1,29 @@
+name: Build Timetable APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check ZIP
+        run: |
+          echo "Checking project ZIP..."
+          ls -lh
+          test -f School-Timetable-SQLite.zip
+          echo "ZIP found successfully!"
+
+      - name: Extract project
+        run: |
+          mkdir timetable
+          unzip -q School-Timetable-SQLite.zip -d timetable
+
+      - name: Show project files
+        run: |
+          echo "Project extracted successfully."
+          find timetable -type f | sort
